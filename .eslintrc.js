@@ -67,6 +67,9 @@ module.exports = {
     'react/self-closing-comp': 0,
     'react/sort-comp': 0,
     'require-yield': 0,
+    'consistent-return': 0,
+    'implicit-arrow-linebreak': 2,
+    'brace-style': [2, '1tbs'],
   },
   "parser": "babel-eslint",
   "settings": {
