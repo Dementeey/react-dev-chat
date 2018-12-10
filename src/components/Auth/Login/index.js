@@ -1,6 +1,7 @@
-import React from "react";
+import React, { Component } from 'react';
 
-class Login extends React.Component {
+// eslint-disable-next-line react/prefer-stateless-function
+class Login extends Component {
   render() {
     return <div>Login</div>;
   }
