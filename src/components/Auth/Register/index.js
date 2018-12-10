@@ -10,7 +10,7 @@ import {
   Icon,
   GridColumn,
 } from 'semantic-ui-react';
-import firebase from '../../../firebase';
+import firebase from '../../../helpers/firebase';
 
 class Register extends Component {
   state = {
