@@ -10,8 +10,10 @@ import {
   Icon,
   GridColumn,
 } from 'semantic-ui-react';
+import md5 from 'md5';
 import firebase from '../../../helpers/firebase';
 import messages from '../../../helpers/allMessages';
+
 
 class Register extends Component {
   state = {
@@ -21,6 +23,7 @@ class Register extends Component {
     passwordConfirmation: '',
     errors: [],
     loading: false,
+    usersRef: firebase.database().ref('users'),
   };
 
   handleChange = event => this.setState({ [event.target.name]: event.target.value });
@@ -63,9 +66,7 @@ class Register extends Component {
 
   displayErrors = errors => errors.map(elem => <p key={elem.message.length}>{elem.message}</p>)
 
-  handleInputError = (errors, name) => errors.some(error => error.message.toLowerCase().includes(name))
-    ? 'error'
-    : '';
+  handleInputError = (errors, name) => errors.some(error => error.message.toLowerCase().includes(name)) ? 'error' : '';
 
 
   handleSubmit = (event) => {
@@ -79,15 +80,27 @@ class Register extends Component {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((createdUser) => {
-        /* eslint-disable no-console */
-        console.log('====================================');
-        console.log(createdUser);
-        console.log('====================================');
+        createdUser.user.updateProfile({
+          displayName: this.state.username,
+          photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`,
+        })
+          .then(() => {
+            this.saveUser(createdUser).then(() => {
+            });
+          })
+          .catch(error => this.setState(prevState => ({ errors: prevState.errors.concat(error), loading: false })));
       })
-      .catch((error) => {
-        this.setState(prevState => ({ errors: prevState.errors.concat(error), loading: false }));
-      });
+      .catch(error => this.setState(prevState => ({ errors: prevState.errors.concat(error), loading: false })));
   }
+
+  saveUser = (createdUser) => {
+    const response = this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL,
+    });
+
+    return response;
+  };
 
   render() {
     const {
